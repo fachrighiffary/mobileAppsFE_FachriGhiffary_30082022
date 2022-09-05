@@ -1,10 +1,10 @@
 import axios from "axios";
 
 // DEV
-export const BASE_URL = "http://10.0.2.2:8080/";
+// export const BASE_URL = "http://10.0.2.2:8080/";
 
 // PROD
-// export const BASE_URL = "https://test-mobile-fachri.herokuapp.com/";
+export const BASE_URL = "https://mobiletestbe.herokuapp.com/";
 
 export const MASTERPRODUCT = "GetMasterProduct";
 export const MASTERBRANCH = "GetMasterBranch";

@@ -1,10 +1,16 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
 import React from "react";
 import ReactNativeModal from "react-native-modal";
 import Item from "../item";
 import Label from "../Label";
 
-const ModalAlert = ({ isvisible, onClose, onPress }) => {
+const ModalAlert = ({ isvisible, onClose, onPress, loading }) => {
   return (
     <ReactNativeModal isVisible={isvisible}>
       <Item flex={1} justifycenter alignCenter>
@@ -58,7 +64,9 @@ const ModalAlert = ({ isvisible, onClose, onPress }) => {
               onPress={() => onPress()}
               style={{ ...styles.btn, backgroundColor: "blue" }}
             >
-              <Label color={"white"}>Yes, Delete</Label>
+              {loading
+                ? <ActivityIndicator size={"small"} color="white" />
+                : <Label color={"white"}>Yes, Delete</Label>}
             </Pressable>
           </Item>
         </Item>

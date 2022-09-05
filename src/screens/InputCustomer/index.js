@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   LogBox,
   SafeAreaView,
@@ -38,6 +39,7 @@ const InputCustomer = ({ navigation }) => {
   const [success, setSuccess] = useState();
   const [showModal, setShowModal] = useState(false);
   const [idItem, setIdItem] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // VARIABLE DATA
   const [firstName, setFirstName] = useState("");
@@ -181,6 +183,7 @@ const InputCustomer = ({ navigation }) => {
     } else if (!tenor) {
       Alert.alert("Tenor Tidak boleh kosong");
     } else {
+      setLoading(true);
       const data = {
         FIRST_NAME: firstName,
         LAST_NAME: lastName,
@@ -200,15 +203,7 @@ const InputCustomer = ({ navigation }) => {
       axios
         .post(`${BASE_URL}${ADDCUSTOMER}`, data)
         .then(async result => {
-          const data = {
-            ENDPOiNT: ADDCUSTOMER,
-            PARAMETER_IN: "",
-            LOG_ID: "fachri",
-            USR_CRT: "fachri",
-            RESPONSE_CODE: res.data.statusCode,
-            RESPONSE_MESSAGE: res.data.status
-          };
-          const resp = await logApiResponse(data);
+          setLoading(false);
           if (result.data.statusCode === 200) {
             console.log("Hasil add customer : ", result);
             setSuccess(true);
@@ -225,14 +220,25 @@ const InputCustomer = ({ navigation }) => {
               setVisibleAlert(false);
             }, 2000);
           }
+          const data = {
+            ENDPOiNT: ADDCUSTOMER,
+            PARAMETER_IN: "",
+            LOG_ID: "fachri",
+            USR_CRT: "fachri",
+            RESPONSE_CODE: res.statusCode,
+            RESPONSE_MESSAGE: res.status
+          };
+          const resp = await logApiResponse(data);
         })
         .catch(err => {
+          setLoading(false);
           console.log(err);
         });
     }
   };
 
   const deleteData = async () => {
+    setLoading(true);
     const param = {
       ENDPOiNT: `${UPDATECUSTOMER}`,
       PARAMETER_IN: JSON.stringify(idItem),
@@ -243,6 +249,7 @@ const InputCustomer = ({ navigation }) => {
     axios
       .delete(`${BASE_URL}${UPDATECUSTOMER}/${idItem}`)
       .then(async result => {
+        setLoading(false);
         if (result.data.statusCode === 200) {
           console.log("Hasil add customer : ", result);
           setSuccess(true);
@@ -265,12 +272,13 @@ const InputCustomer = ({ navigation }) => {
           PARAMETER_IN: JSON.stringify(idItem),
           LOG_ID: "fachri",
           USR_CRT: "fachri",
-          RESPONSE_CODE: res.data.statusCode,
-          RESPONSE_MESSAGE: res.data.status
+          RESPONSE_CODE: res.statusCode,
+          RESPONSE_MESSAGE: res.status
         };
         const resp = await logApiResponse(data);
       })
       .catch(err => {
+        setLoading(false);
         console.log(err);
       });
   };
@@ -325,18 +333,30 @@ const InputCustomer = ({ navigation }) => {
             />
           </Item>
           <Item marginTop={20}>
-            <Button
-              height={35}
-              width={250}
-              bg={"lightgreen"}
-              txtColor="black"
-              borderWidth={1}
-              borderRadius={8}
-              label={"Submit"}
-              onPress={() => {
-                onSubmit();
-              }}
-            />
+            {loading
+              ? <Item
+                  height={35}
+                  width={250}
+                  justifycenter
+                  alignCenter
+                  borderWidth={1}
+                  borderRadius={8}
+                  backgroundColor={"lightgreen"}
+                >
+                  <ActivityIndicator size={"small"} color="white" />
+                </Item>
+              : <Button
+                  height={35}
+                  width={250}
+                  bg={"lightgreen"}
+                  txtColor="black"
+                  borderWidth={1}
+                  borderRadius={8}
+                  label={"Submit"}
+                  onPress={() => {
+                    onSubmit();
+                  }}
+                />}
           </Item>
           <Item marginTop={10} marginBottom={50}>
             <Button
@@ -366,6 +386,7 @@ const InputCustomer = ({ navigation }) => {
           />
         </Item>
         <ModalAlert
+          loading={loading}
           isvisible={showModal}
           onPress={() => deleteData()}
           onClose={() => {

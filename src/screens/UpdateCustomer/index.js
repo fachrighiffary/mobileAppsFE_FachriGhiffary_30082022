@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  ActivityIndicator,
   Alert,
   SafeAreaView,
   ScrollView,
@@ -37,6 +38,7 @@ const UpdateCustomer = ({ route, navigation }) => {
   const [collapseTenor, setcollapseTenor] = useState(true);
   const [visibleAlert, setVisibleAlert] = useState(false);
   const [success, setSuccess] = useState();
+  const [loading, setLoading] = useState(false);
 
   // VARIABLE DATA
   const [firstName, setFirstName] = useState("");
@@ -157,7 +159,6 @@ const UpdateCustomer = ({ route, navigation }) => {
       });
   };
   const updateData = async () => {
-    console.log(`${BASE_URL}${UPDATECUSTOMER}/${route.params}`);
     if (!firstName) {
       Alert.alert("FirstName tidak boleh kosong");
     } else if (!lastName) {
@@ -171,6 +172,7 @@ const UpdateCustomer = ({ route, navigation }) => {
     } else if (!tenor) {
       Alert.alert("Tenor Tidak boleh kosong");
     } else {
+      setLoading(true);
       const data = {
         FIRST_NAME: firstName,
         LAST_NAME: lastName,
@@ -190,6 +192,7 @@ const UpdateCustomer = ({ route, navigation }) => {
       axios
         .put(`${BASE_URL}${UPDATECUSTOMER}/${route.params}`, data)
         .then(async result => {
+          setLoading(setLoading(false));
           if (result.data.statusCode === 200) {
             console.log("Hasil add customer : ", result);
             setSuccess(true);
@@ -215,6 +218,7 @@ const UpdateCustomer = ({ route, navigation }) => {
           const resp = await logApiResponse(data);
         })
         .catch(err => {
+          setLoading(false);
           console.log(err);
         });
     }
@@ -281,18 +285,30 @@ const UpdateCustomer = ({ route, navigation }) => {
           </Item>
 
           <Item marginTop={20}>
-            <Button
-              height={35}
-              width={250}
-              bg={"lightgreen"}
-              txtColor="black"
-              borderWidth={1}
-              borderRadius={8}
-              label={"Submit"}
-              onPress={() => {
-                updateData();
-              }}
-            />
+            {loading
+              ? <Item
+                  justifycenter
+                  alignCenter
+                  height={35}
+                  width={250}
+                  backgroundColor={"lightgreen"}
+                  borderWidth={1}
+                  borderRadius={8}
+                >
+                  <ActivityIndicator size={"small"} color="white" />
+                </Item>
+              : <Button
+                  height={35}
+                  width={250}
+                  bg={"lightgreen"}
+                  txtColor="black"
+                  borderWidth={1}
+                  borderRadius={8}
+                  label={"Submit"}
+                  onPress={() => {
+                    updateData();
+                  }}
+                />}
           </Item>
           <Item marginTop={10} marginBottom={50}>
             <Button
